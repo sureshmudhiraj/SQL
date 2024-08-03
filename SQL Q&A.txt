@@ -1,0 +1,67 @@
+SQL Common Interview Questions !!
+
+🎗 Write a query to find all employees whose salaries exceed the company's average salary.
+	SELECT employee_id, employee_name, salary 
+	FROM employees
+	WHERE  salary > (select AVG(salary) FROM employees);
+	
+🎗 Write a query to retrieve the names of employees who work in the same department as 'John Doe'.
+	SELECT` * from EmployeeTable
+	WHERE department = 'John Doe'
+	
+🎗 Write a query to display the second highest salary from the Employee table without using the MAX function twice.
+   SELECT TOP 1 salary
+	FROM (SELECT DISTINCT salary FROM employees ORDER BY salary DESC) AS sorted_salaries
+	ORDER BY salary ASC;
+
+🎗 Write a query to find all customers who have placed more than five orders.
+	SELECT customer_id 
+	FROM orders 
+	GROUP BY     customer_id
+	HAVING COUNT(order_id) > 5;
+
+🎗 Write a query to count the total number of orders placed by each customer.
+	SELECT customer_id, 
+    COUNT(order_id) AS total_orders
+	FROM orders
+	GROUP BY customer_id;
+
+🎗 Write a query to list employees who joined the company within the last 6 months.
+	SELECT employee_id, employee_name, join_date
+	FROM employees
+	WHERE join_date >= DATEADD(MONTH, -6, GETDATE());
+
+🎗 Write a query to calculate the total sales amount for each product.
+	SELECT ProductID, SUM(SalesAmount) AS TotalSalesAmount
+	FROM Sales
+	GROUP BY ProductID;
+
+🎗 Write a query to list all products that have never been sold.
+	SELECT p.ProductID, p.ProductName
+	FROM Products p
+	LEFT JOIN Sales s ON p.ProductID = s.ProductID
+	WHERE s.ProductID IS NULL;
+
+🎗 Write a query to remove duplicate rows from a table.
+	WITH CTE AS (
+    SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY Column1, Column2, Column3 ORDER BY (SELECT NULL)) AS rn
+    FROM YourTable)
+	DELETE FROM CTE
+	WHERE rn > 1;
+
+🎗 Write a query to identify the top 10 customers who have not placed any orders in the past year.
+	WITH RecentOrders AS (
+    SELECT DISTINCT CustomerID
+    FROM Orders
+    WHERE OrderDate >= DATEADD(year, -1, GETDATE()) -- Adjust for your SQL dialect if needed),
+	InactiveCustomers AS (
+    SELECT c.CustomerID, c.CustomerName
+    FROM Customers c
+    LEFT JOIN RecentOrders r ON c.CustomerID = r.CustomerID
+    WHERE r.CustomerID IS NULL)
+	SELECT TOP 10 CustomerID, CustomerName
+	FROM InactiveCustomers
+	ORDER BY CustomerID; -- Adjust the ordering based on your needs
+		
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
